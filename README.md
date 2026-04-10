@@ -14,7 +14,7 @@ A simple and interactive sorting visualizer built using HTML, CSS, and JavaScrip
 - HTML
 - CSS
 - JavaScript
-- 
+  
 📸 Demo
 (Add your screenshot or GIF here)
 
