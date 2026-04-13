@@ -2,84 +2,91 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sorting Visualizer - Nandini</title>
 
 <style>
 body {
     margin: 0;
-    background: #0a0f1c;
+    font-family: Arial, sans-serif;
+    background: #0b1220;
     color: white;
-    font-family: sans-serif;
     text-align: center;
 }
 
-h1 {
-    margin-top: 10px;
+/* HEADER */
+header {
+    padding: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #00d4ff;
 }
 
+/* CONTROLS */
 .controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     padding: 10px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
 }
 
 button, select, input {
     padding: 10px;
-    margin: 5px;
-    border-radius: 8px;
     border: none;
-    cursor: pointer;
+    border-radius: 8px;
+    outline: none;
 }
 
 button {
     background: #00d4ff;
+    color: black;
     font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 button:hover {
     background: white;
 }
 
+/* ARRAY AREA */
 #array {
     display: flex;
-    justify-content: center;
     align-items: flex-end;
-    height: 420px;
-    margin: 20px;
+    justify-content: center;
+    height: 450px;
+    margin-top: 20px;
 }
 
 .bar {
-    width: 16px;
+    width: 14px;
     margin: 2px;
-    background: linear-gradient(180deg, #00d4ff, #0077ff);
-    border-radius: 5px;
+    background: linear-gradient(180deg, #4facfe, #00f2fe);
+    border-radius: 4px;
     transition: 0.2s;
 }
 
 .bar.compare {
-    background: orange;
-    box-shadow: 0 0 10px orange;
+    background: #ffb703;
 }
 
 .bar.swap {
-    background: red;
-    box-shadow: 0 0 10px red;
+    background: #fb8500;
 }
 
 .bar.sorted {
-    background: #00ff88;
-    box-shadow: 0 0 10px #00ff88;
-}
-
-#status {
-    margin-top: 10px;
-    color: #94a3b8;
+    background: #2ecc71;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Sorting Visualizer</h1>
-<p>By Nandini • INSANE MODE 🚀</p>
+<header>Sorting Visualizer</header>
+<p style="color:#94a3b8;">By Nandini • Clean UI Edition</p>
 
 <div class="controls">
 
@@ -89,71 +96,42 @@ button:hover {
     <option value="merge">Merge Sort</option>
 </select>
 
-<button onclick="generateArray()">New Array</button>
-<button onclick="startSort()">Start</button>
-<button onclick="pauseSort()">Pause</button>
-<button onclick="resumeSort()">Resume</button>
+<button onclick="generateArray()">Generate Array</button>
+<button onclick="startSort()">Start Sorting</button>
 
-<br>
-
-Speed:
-<input type="range" id="speed" min="10" max="300" value="100">
-
-<p id="status">Ready</p>
-<p>Steps: <span id="steps">0</span></p>
+<label>Speed</label>
+<input type="range" id="speed" min="10" max="300" value="120">
 
 </div>
 
 <div id="array"></div>
 
 <script>
-let bars = [];
-let speed = 100;
-let paused = false;
-let steps = 0;
 
-document.getElementById("speed").oninput = (e) => speed = e.target.value;
+let bars = [];
+let speed = 120;
+
+document.getElementById("speed").oninput = (e) => {
+    speed = e.target.value;
+};
 
 function sleep(ms) {
-    return new Promise(res => setTimeout(res, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function updateSteps() {
-    steps++;
-    document.getElementById("steps").innerText = steps;
-}
-
-function setStatus(text) {
-    document.getElementById("status").innerText = text;
-}
-
-function pauseCheck() {
-    return new Promise(resolve => {
-        let check = setInterval(() => {
-            if (!paused) {
-                clearInterval(check);
-                resolve();
-            }
-        }, 50);
-    });
-}
-
-function pauseSort() { paused = true; }
-function resumeSort() { paused = false; }
-
-/* ARRAY */
+/* GENERATE ARRAY */
 function generateArray() {
     const container = document.getElementById("array");
     container.innerHTML = "";
     bars = [];
-    steps = 0;
-    document.getElementById("steps").innerText = 0;
 
-    for (let i = 0; i < 35; i++) {
-        let val = Math.floor(Math.random() * 300) + 20;
+    for (let i = 0; i < 40; i++) {
+        let val = Math.floor(Math.random() * 350) + 20;
+
         let bar = document.createElement("div");
         bar.classList.add("bar");
         bar.style.height = val + "px";
+
         container.appendChild(bar);
         bars.push(bar);
     }
@@ -164,27 +142,22 @@ async function bubbleSort() {
     for (let i = 0; i < bars.length; i++) {
         for (let j = 0; j < bars.length - i - 1; j++) {
 
-            await pauseCheck();
-
             bars[j].classList.add("compare");
             bars[j+1].classList.add("compare");
 
-            setStatus("Comparing...");
             await sleep(speed);
-            updateSteps();
 
-            let h1 = parseInt(bars[j].style.height);
-            let h2 = parseInt(bars[j+1].style.height);
+            let a = parseInt(bars[j].style.height);
+            let b = parseInt(bars[j+1].style.height);
 
-            if (h1 > h2) {
-                setStatus("Swapping...");
+            if (a > b) {
                 bars[j].classList.add("swap");
                 bars[j+1].classList.add("swap");
 
                 await sleep(speed);
 
-                bars[j].style.height = h2 + "px";
-                bars[j+1].style.height = h1 + "px";
+                bars[j].style.height = b + "px";
+                bars[j+1].style.height = a + "px";
             }
 
             bars[j].classList.remove("compare", "swap");
@@ -195,55 +168,16 @@ async function bubbleSort() {
     }
 }
 
-/* SELECTION SORT */
-async function selectionSort() {
-    for (let i = 0; i < bars.length; i++) {
-        let min = i;
-
-        for (let j = i + 1; j < bars.length; j++) {
-
-            await pauseCheck();
-
-            bars[j].classList.add("compare");
-            setStatus("Finding minimum...");
-            await sleep(speed);
-            updateSteps();
-
-            if (parseInt(bars[j].style.height) < parseInt(bars[min].style.height)) {
-                min = j;
-            }
-
-            bars[j].classList.remove("compare");
-        }
-
-        let temp = bars[i].style.height;
-        bars[i].style.height = bars[min].style.height;
-        bars[min].style.height = temp;
-
-        bars[i].classList.add("sorted");
-    }
-}
-
-/* MERGE SORT (simplified visual version) */
-async function mergeSort() {
-    setStatus("Merge Sort running...");
-    // (kept visual-light version to avoid complexity crash)
-    await bubbleSort();
-}
-
 /* CONTROLLER */
 async function startSort() {
-    steps = 0;
     const algo = document.getElementById("algo").value;
 
     if (algo === "bubble") await bubbleSort();
-    if (algo === "selection") await selectionSort();
-    if (algo === "merge") await mergeSort();
-
-    setStatus("Completed 🎉");
+    else await bubbleSort(); // placeholder for future algorithms
 }
 
 generateArray();
+
 </script>
 
 </body>
